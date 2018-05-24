@@ -37,6 +37,29 @@ public class MainActivity extends AppCompatActivity {
         handlePermissions();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        pexView.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        pexView.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        pexView.setFinishedCallback(pexView.new PexCallback() {
+//            @Override
+//            public void callback(String s) {
+//                Log.d("onDestroy", s);
+//            }
+//        });
+    }
+
     private void handlePermissions() {
         if (rxPermissions == null) {
             rxPermissions = new RxPermissions(this);
@@ -85,11 +108,20 @@ public class MainActivity extends AppCompatActivity {
 
         pexView.addPageLoadedCallback(pexView.new PexCallback() {
             @Override
+            public void runOnUI(String returnValue) {
+                super.runOnUI(returnValue);
+                Log.d(TAG_INIT_PEX, "runOnUI.... " + returnValue);
+            }
+
+            @Override
             public void callback(String args) {
-                Log.d(TAG_INIT_PEX, "addPageLoadedCallback...");
+                Log.d(TAG_INIT_PEX, "addPageLoadedCallback... " + args);
                 // make a call
                 pexView.evaluateFunction("makeCall", "pex-pool.vscene.net", "john_vmr", "Alex-droid");
+
+                pexView.fetchPexRTCSource();
             }
+
         });
 
         pexView.load();
