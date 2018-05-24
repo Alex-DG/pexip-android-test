@@ -12,6 +12,11 @@
         android:background="@drawable/relative_layout_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <!--<com.pexip.android.wrapper.PexView-->
+        <!--android:id="@+id/pex_layout"-->
+        <!--android:background="@drawable/relative_layout_background"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"/>-->
 
     <com.pexip.android.wrapper.PexView
         android:id="@+id/pex_self_layout"

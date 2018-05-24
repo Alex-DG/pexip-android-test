@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Layouts
     private RelativeLayout layout;
+    // private PexView layout;
     private PexView pexView;
     private WebView selfView;
 
@@ -41,13 +42,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        pexView.onPause();
+        if (pexView != null) {
+            pexView.onPause();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        pexView.onResume();
+        if (pexView != null) {
+            pexView.onResume();
+        }
     }
 
     @Override
