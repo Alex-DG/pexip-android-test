@@ -22,7 +22,8 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO
     };
-    private RxPermissions rxPermissions; // where this is an Activity instance
+
+    private RxPermissions rxPermissions;
 
     // Layouts
     private RelativeLayout layout;
@@ -118,8 +119,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG_INIT_PEX, "addPageLoadedCallback... " + args);
                 // make a call
                 pexView.evaluateFunction("makeCall", "pex-pool.vscene.net", "john_vmr", "Alex-droid");
-
-                pexView.fetchPexRTCSource();
             }
 
         });
