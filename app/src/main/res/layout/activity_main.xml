@@ -12,10 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <!--<com.pexip.android.wrapper.PexView-->
-        <!--android:layout_width="150dp"-->
-        <!--android:layout_height="150dp">-->
-<!--</com.pexip.android.wrapper.PexView>-->
+    <com.pexip.android.wrapper.PexView
+        android:id="@+id/pex_self_layout"
+        android:layout_width="400px"
+        android:layout_height="450px" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -1,57 +1,72 @@
 package com.gearedapp.ajentapexip;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.pexip.android.wrapper.PexView;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    RelativeLayout layout;
-    PexView pexView;
+    private static final String TAG_PERM = "PERM";
+    private static final String TAG_INIT_PEX = "INIT_PEX";
+
+    // Permissions
+    private static final String[] PERMISSIONS = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO
+    };
+    private RxPermissions rxPermissions; // where this is an Activity instance
+
+    // Layouts
+    private RelativeLayout layout;
+    private PexView pexView;
+    private WebView selfView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // HANDLE PERMISSIONS
-        // TODO You have to restart this app once the permissions are all setup
-        // will improve that later
-        int PERMISSION_ALL = 1;
+        handlePermissions();
+    }
 
-        String[] PERMISSIONS = {
-                Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO
-        };
-
-        if(!hasPermissions(this, PERMISSIONS)){
-            Log.d("initPexip", "Permissions required");
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-        } else {
-            Log.d("initPexip", "Permissions success");
-            initPexip();
+    private void handlePermissions() {
+        if (rxPermissions == null) {
+            rxPermissions = new RxPermissions(this);
         }
+
+        rxPermissions.request(PERMISSIONS).subscribe(granted -> {
+            if (granted) {
+                Log.i(TAG_PERM, "All permissions granted");
+                initPexip();
+            } else {
+                Log.e(TAG_PERM, "At least one permission is not granted");
+            }
+        });
     }
 
     private void initPexip() {
-        pexView = new PexView(this);
-        layout = (RelativeLayout) findViewById(R.id.pex_layout);
+        if (pexView == null) {
+            pexView = new PexView(this);
+        }
+
+        layout = findViewById(R.id.pex_layout);
         layout.addView(pexView);
+
+        selfView = findViewById(R.id.pex_self_layout);
+        pexView.setSelfView(selfView);
 
         pexView.setEvent("onSetup", pexView.new PexEvent() {
             @Override
             public void onEvent(String[] strings) {
-                Log.d("ALEX", "onSetup...");
+                Log.i(TAG_INIT_PEX, "onSetup...");
                 pexView.setSelfViewVideo(strings[0]);
                 pexView.evaluateFunction("connect");
             }
@@ -60,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         pexView.setEvent("onConnect", pexView.new PexEvent() {
             @Override
             public void onEvent(String[] strings) {
-                Log.d("ALEX", "onConnect...");
+                Log.i(TAG_INIT_PEX, "onConnect...");
                 if (strings.length > 0 && strings[0] != null) {
                     pexView.setVideo(strings[0]);
                 }
@@ -71,24 +86,12 @@ public class MainActivity extends AppCompatActivity {
         pexView.addPageLoadedCallback(pexView.new PexCallback() {
             @Override
             public void callback(String args) {
-                Log.d("ALEX", "addPageLoadedCallback...");
+                Log.d(TAG_INIT_PEX, "addPageLoadedCallback...");
                 // make a call
-                pexView.evaluateFunction("makeCall", "pex-pool.vscene.net", "john_vmr", "Alex-webview");
+                pexView.evaluateFunction("makeCall", "pex-pool.vscene.net", "john_vmr", "Alex-droid");
             }
         });
 
-
         pexView.load();
-    }
-
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }
