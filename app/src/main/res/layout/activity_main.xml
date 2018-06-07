@@ -11,18 +11,14 @@
         android:id="@+id/pex_layout"
         android:background="@drawable/relative_layout_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    <!--<com.pexip.android.wrapper.PexView-->
-        <!--android:id="@+id/pex_layout"-->
-        <!--android:background="@drawable/relative_layout_background"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"/>-->
+        android:layout_height="match_parent">
 
-    <com.pexip.android.wrapper.PexView
-        android:id="@+id/pex_self_layout"
-        android:background="@drawable/pexview_background"
-        android:padding="10dp"
-        android:layout_width="400px"
-        android:layout_height="450px" />
+        <com.pexip.android.wrapper.PexView
+            android:id="@+id/pex_self_layout"
+            android:padding="10dp"
+            android:layout_width="400px"
+            android:layout_height="450px" />
+
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

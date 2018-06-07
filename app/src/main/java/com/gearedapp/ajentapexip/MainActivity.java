@@ -1,15 +1,21 @@
 package com.gearedapp.ajentapexip;
 
 import android.Manifest;
+import android.opengl.GLSurfaceView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.pexip.android.wrapper.PexView;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import java.io.IOError;
+import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -27,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Layouts
     private RelativeLayout layout;
-    // private PexView layout;
     private PexView pexView;
     private WebView selfView;
+    private RelativeLayout.LayoutParams pexLayoutParams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +64,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (pexView != null) {
+            pexView.destroy();
+        }
 //        pexView.setFinishedCallback(pexView.new PexCallback() {
 //            @Override
 //            public void callback(String s) {
 //                Log.d("onDestroy", s);
 //            }
-//        });
+//        });VS
     }
 
     private void handlePermissions() {
@@ -86,8 +95,12 @@ public class MainActivity extends AppCompatActivity {
             pexView = new PexView(this);
         }
 
+        if (pexLayoutParams == null) {
+            pexLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+
         layout = findViewById(R.id.pex_layout);
-        layout.addView(pexView);
+        layout.addView(pexView, pexLayoutParams);
 
         selfView = findViewById(R.id.pex_self_layout);
         pexView.setSelfView(selfView);
@@ -108,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
                 if (strings.length > 0 && strings[0] != null) {
                     pexView.setVideo(strings[0]);
                 }
-
             }
         });
 
@@ -127,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
 
         pexView.load();
     }
