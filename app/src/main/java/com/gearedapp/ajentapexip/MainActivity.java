@@ -1,27 +1,25 @@
 package com.gearedapp.ajentapexip;
 
 import android.Manifest;
-import android.opengl.GLSurfaceView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.pexip.android.wrapper.PexView;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
-import java.io.IOError;
-import java.io.IOException;
-
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG_PERM = "PERM";
     private static final String TAG_INIT_PEX = "INIT_PEX";
+    private static final String TAG_BTN = "ON_CLICK_BTN";
+    private static final String TAG_FINISH = "FINISH_CALLBACK";
 
     // Permissions
     private static final String[] PERMISSIONS = {
@@ -36,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
     private PexView pexView;
     private WebView selfView;
     private RelativeLayout.LayoutParams pexLayoutParams;
+
+    private Button disconnectBtn;
+    private Button connectBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +68,6 @@ public class MainActivity extends AppCompatActivity {
         if (pexView != null) {
             pexView.destroy();
         }
-//        pexView.setFinishedCallback(pexView.new PexCallback() {
-//            @Override
-//            public void callback(String s) {
-//                Log.d("onDestroy", s);
-//            }
-//        });VS
     }
 
     private void handlePermissions() {
@@ -83,14 +78,14 @@ public class MainActivity extends AppCompatActivity {
         rxPermissions.request(PERMISSIONS).subscribe(granted -> {
             if (granted) {
                 Log.i(TAG_PERM, "All permissions granted");
-                initPexip();
+                start();
             } else {
                 Log.e(TAG_PERM, "At least one permission is not granted");
             }
         });
     }
 
-    private void initPexip() {
+    private void start() {
         if (pexView == null) {
             pexView = new PexView(this);
         }
@@ -99,12 +94,22 @@ public class MainActivity extends AppCompatActivity {
             pexLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
 
+        disconnectBtn = findViewById(R.id.btn_disconnect);
+        connectBtn = findViewById(R.id.btn_connect);
+
+        disconnectBtn.setOnClickListener(onDisconnect);
+        connectBtn.setOnClickListener(onConnect);
+
         layout = findViewById(R.id.pex_layout);
         layout.addView(pexView, pexLayoutParams);
 
         selfView = findViewById(R.id.pex_self_layout);
         pexView.setSelfView(selfView);
 
+        initPexip();
+    }
+
+    private void initPexip() {
         pexView.setEvent("onSetup", pexView.new PexEvent() {
             @Override
             public void onEvent(String[] strings) {
@@ -135,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
             public void callback(String args) {
                 Log.d(TAG_INIT_PEX, "addPageLoadedCallback... " + args);
                 // make a call
-                pexView.evaluateFunction("makeCall", "pex-pool.vscene.net", "john_vmr", "Alex-droid");
+                pexView.evaluateFunction("makeCall", "pex-pool.vscene.net", "john_vmr", "Alex-french-droid");
             }
 
         });
@@ -143,4 +148,19 @@ public class MainActivity extends AppCompatActivity {
 
         pexView.load();
     }
+
+    private View.OnClickListener onDisconnect = ((View v) -> {
+        Log.d(TAG_BTN, "Disconnect");
+        if (pexView != null) {
+            pexView.evaluateFunction("disconnect");
+        }
+    });
+
+    private View.OnClickListener onConnect = ((View v) -> {
+        Log.d(TAG_BTN, "Connect");
+        if (pexView != null) {
+            initPexip();
+        }
+
+    });
 }
